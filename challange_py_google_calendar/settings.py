@@ -90,10 +90,6 @@ DATABASES = {
         'PORT': env('DB_PORT'),
         'USER': env('DB_USER')
     },
-    'test': {
-        'ENGINE': 'django.db.backends.sqlite',
-        'NAME': f'test_{env("DB_NAME")}',
-    }
 }
 
 

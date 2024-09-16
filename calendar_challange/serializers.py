@@ -25,9 +25,9 @@ class EventoSerializer(sz.ModelSerializer):
         fields = ['idevento', 'titulo', 'descricao', 'data', 'horario']
     
     def _get_data_horario_inicio(self, validated_data):
-        if validated_data['data'] and validated_data['horario']:
+        if validated_data.get('data', None) and validated_data.get('horario', None):
             naive_datetime = datetime.combine(validated_data['data'], validated_data['horario'])
-        elif validated_data['data']:
+        elif validated_data.get('data', None):
             endtime = datetime.strptime(settings.DEFAULT_HOUR, settings.DEFAULT_HOUR_FORMAT).time()
             naive_datetime = datetime.combine(validated_data['data'], endtime)
         else:
@@ -36,6 +36,7 @@ class EventoSerializer(sz.ModelSerializer):
         return aware_datetime.strftime('%Y-%m-%dT%H:%M:%S%z'), aware_datetime
     
     def create(self, validated_data: dict):
+        
         app = apps.get_app_config('calendar_challange')
         service = app.servico_calendario
         datetime_str_inicio, datetime_inicio = self._get_data_horario_inicio(validated_data)
@@ -43,7 +44,7 @@ class EventoSerializer(sz.ModelSerializer):
         validated_data['horario'] = datetime_inicio.time()
         tarefa = {
             'summary': validated_data['titulo'],
-            'description': validated_data['descricao'],
+            'description': validated_data.get('descricao', ''),
             'start': {
                 'dateTime': datetime_str_inicio,
                 'timeZone': 'America/Sao_Paulo',
